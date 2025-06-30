@@ -1,0 +1,35 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 30px;
+  background-color: #f4f4f4;
+}
+
+canvas {
+  border: 1px solid #ccc;
+  margin-top: 20px;
+  max-width: 100%;
+}
+
+.form-group input {
+  margin: 5px auto;
+  width: 80%;
+  max-width: 400px;
+  font-family: Georgia, serif;
+}
+
+input[type="text"] {
+  font-family: Georgia, serif;
+}
+
+input[type="file"],
+input[type="text"] {
+  margin: 10px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}

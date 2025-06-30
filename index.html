@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Prompt Overlay Tool</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <h1>Image Prompt Overlay Tool</h1>
+
+  <input type="file" id="upload" accept="image/*">
+  <br>
+
+  <div class="form-group">
+    <input type="text" id="date" placeholder="Date:"><br/>
+    <input type="text" id="sources" placeholder="Sources used:"><br/>
+    <input type="text" id="structures" placeholder="Structures:"><br/>
+    <input type="text" id="prompt" placeholder="Prompt:">
+  </div>
+
+  <br>
+  <button onclick="addTextToImage()">Apply Prompt</button>
+  <button onclick="downloadImage()">Download Image</button>
+
+  <br>
+  <canvas id="canvas"></canvas>
+
+
+  <script src="script.js" defer></script>
+</body>
+</html>
