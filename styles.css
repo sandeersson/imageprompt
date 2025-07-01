@@ -5,31 +5,56 @@ body {
   background-color: #f4f4f4;
 }
 
-canvas {
-  border: 1px solid #ccc;
-  margin-top: 20px;
-  max-width: 100%;
+input[type="file"] {
+  margin-bottom: 20px;
 }
 
 .form-group input {
+  display: block;
   margin: 5px auto;
   width: 80%;
   max-width: 400px;
   font-family: Georgia, serif;
-}
-
-input[type="text"] {
-  font-family: Georgia, serif;
-}
-
-input[type="file"],
-input[type="text"] {
-  margin: 10px;
+  font-size: 16px;
+  padding: 8px;
 }
 
 button {
-  margin-top: 15px;
+  margin-top: 10px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+}
+
+#results {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.result-item img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.result-item a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #4B0082;
+  font-weight: bold;
 }
