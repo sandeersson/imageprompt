@@ -1,24 +1,51 @@
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-let uploadedImage = new Image();
+function processAllImages() {
+  const files = document.getElementById("upload").files;
+  if (!files.length) return;
 
-document.getElementById("upload").addEventListener("change", function (e) {
-  const reader = new FileReader();
-  reader.onload = function (event) {
-    uploadedImage.onload = function () {
-      canvas.width = uploadedImage.width;
-      canvas.height = uploadedImage.height;
-      ctx.drawImage(uploadedImage, 0, 0);
+  const date = document.getElementById("date").value;
+  const sources = document.getElementById("sources").value;
+  const structures = document.getElementById("structures").value;
+  const prompt = document.getElementById("prompt").value;
+
+  document.getElementById("results").innerHTML = ""; // clear previous
+
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        drawPromptOnCanvas(ctx, canvas, { date, sources, structures, prompt });
+
+        const imgEl = document.createElement("img");
+        imgEl.src = canvas.toDataURL();
+
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL();
+        link.download = `annotated-${file.name}`;
+        link.textContent = "Download Annotated Image";
+
+        const container = document.createElement("div");
+        container.className = "result-item";
+        container.appendChild(imgEl);
+        container.appendChild(link);
+
+        document.getElementById("results").appendChild(container);
+      };
+      img.src = event.target.result;
     };
-    uploadedImage.src = event.target.result;
-  };
-  reader.readAsDataURL(e.target.files[0]);
-});
+    reader.readAsDataURL(file);
+  });
+}
 
-function addTextToImage() {
-  if (!uploadedImage.src) return;
-
-  ctx.drawImage(uploadedImage, 0, 0);
+function drawPromptOnCanvas(ctx, canvas, values) {
+  const { date, sources, structures, prompt } = values;
 
   const fontFamily = "Georgia, serif";
   const initialFontSize = 28;
@@ -27,47 +54,44 @@ function addTextToImage() {
   const lineSpacing = 10;
   const maxTextWidth = canvas.width - leftMargin * 2;
 
-  // Get user input values
   const linesRaw = [
-    `Date: ${document.getElementById("date").value}`,
-    `Sources used: ${document.getElementById("sources").value}`,
-    `Structures: ${document.getElementById("structures").value}`,
-    `Prompt: ${document.getElementById("prompt").value}`
+    `Date: ${date}`,
+    `Sources used: ${sources}`,
+    `Structures: ${structures}`,
+    `Prompt: ${prompt}`
   ];
 
-  // Wrap each text block into multiple lines
-  let wrappedLines = [];
-
+  // Wrap text lines
   ctx.font = `${initialFontSize}px ${fontFamily}`;
-  for (let rawLine of linesRaw) {
-    wrappedLines.push(...wrapText(rawLine, maxTextWidth, ctx));
+  let wrappedLines = [];
+  for (let raw of linesRaw) {
+    wrappedLines.push(...wrapText(raw, maxTextWidth, ctx));
   }
 
-  // Estimate total height needed
-  let lineHeight = initialFontSize + lineSpacing;
-  let totalTextHeight = wrappedLines.length * lineHeight;
-
-  // If text would overflow vertically, scale down font
+  // Shrink font if necessary
   let fontSize = initialFontSize;
-  while (totalTextHeight + bottomMargin > canvas.height && fontSize > 12) {
+  let lineHeight = fontSize + lineSpacing;
+  let totalHeight = wrappedLines.length * lineHeight;
+
+  while (totalHeight + bottomMargin > canvas.height && fontSize > 12) {
     fontSize -= 1;
     ctx.font = `${fontSize}px ${fontFamily}`;
     lineHeight = fontSize + lineSpacing;
     wrappedLines = [];
-    for (let rawLine of linesRaw) {
-      wrappedLines.push(...wrapText(rawLine, maxTextWidth, ctx));
+    for (let raw of linesRaw) {
+      wrappedLines.push(...wrapText(raw, maxTextWidth, ctx));
     }
-    totalTextHeight = wrappedLines.length * lineHeight;
+    totalHeight = wrappedLines.length * lineHeight;
   }
 
-  // Now draw each line from bottom up
   ctx.font = `${fontSize}px ${fontFamily}`;
   ctx.fillStyle = "white";
   ctx.strokeStyle = "black";
   ctx.lineWidth = 2;
   ctx.textAlign = "left";
 
-  let startY = canvas.height - bottomMargin - (wrappedLines.length - 1) * lineHeight;
+  const startY = canvas.height - bottomMargin - (wrappedLines.length - 1) * lineHeight;
+
   wrappedLines.forEach((line, i) => {
     const y = startY + i * lineHeight;
     ctx.strokeText(line, leftMargin, y);
@@ -93,11 +117,4 @@ function wrapText(text, maxWidth, ctx) {
 
   if (currentLine) lines.push(currentLine.trim());
   return lines;
-}
-
-function downloadImage() {
-  const link = document.createElement("a");
-  link.download = "modified-image.png";
-  link.href = canvas.toDataURL();
-  link.click();
 }
